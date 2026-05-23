@@ -29,7 +29,6 @@
   <exec_depend>ros_gz_sim</exec_depend>
   <exec_depend>rviz2</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
-  <exec_depend>so_arm100_description</exec_depend>
   <exec_depend>so_arm101_description</exec_depend>
   <exec_depend>so_arm_gz</exec_depend>
   <exec_depend>std_msgs</exec_depend>

@@ -5,6 +5,7 @@
 
 # Python
 *.pyc
+__pycache__/
 
 # Build output
 build/*
@@ -15,9 +16,26 @@ log/*
 logs
 outputs
 
-# External repos imported via vcs
-external/*
+# vcs-imported source repos (kept under src/; in-tree packages live in src/pai/)
+src/*
+!src/pai/
+!src/pai/**
+
+# Legacy external repos directory (before src/ restructure)
+external/
 
 # Recorded datasets
 datasets/*
 datasets_lerobot/*
+
+# Environment files
+.env
+.env.*
+
+# OS files
+.DS_Store
+
+# IDE (VS Code config is tracked; exclude others)
+.idea/
+*.swp
+*.swo

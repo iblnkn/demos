@@ -1,0 +1,88 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "ROS2: SO-ARM Gazebo",
+            "type": "ros2",
+            "request": "launch",
+            "target": "${workspaceFolder}/src/pai/pai_bringup/launch/so_arm_gz_bringup.launch.py",
+            "launch": ["rviz", "gz", "ruby"],
+            "env": {
+                "RMW_IMPLEMENTATION": "rmw_zenoh_cpp"
+            }
+        },
+        {
+            "name": "ROS2: SO-ARM MuJoCo",
+            "type": "ros2",
+            "request": "launch",
+            "target": "${workspaceFolder}/src/pai/pai_bringup/launch/so_arm_mujoco_bringup.launch.py",
+            "launch": ["rviz"],
+            "env": {
+                "RMW_IMPLEMENTATION": "rmw_zenoh_cpp"
+            }
+        },
+        {
+            "name": "ROS2: SO-ARM Real Hardware",
+            "type": "ros2",
+            "request": "launch",
+            "target": "${workspaceFolder}/src/pai/pai_bringup/launch/so_arm_real_bringup.launch.py",
+            "launch": ["rviz"],
+            "env": {
+                "RMW_IMPLEMENTATION": "rmw_zenoh_cpp"
+            }
+        },
+        {
+            "name": "ROS2: Leader Teleop",
+            "type": "ros2",
+            "request": "launch",
+            "target": "${workspaceFolder}/src/pai/pai_leader_teleop/launch/leader_bringup.launch.py",
+            "env": {
+                "RMW_IMPLEMENTATION": "rmw_zenoh_cpp"
+            }
+        },
+        {
+            "name": "ROS2: Attach to Node",
+            "type": "ros2",
+            "request": "attach"
+        },
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/install/lib/${input:package}/${input:program}",
+            "args": [],
+            "preLaunchTask": "build (debug)",
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ],
+    "inputs": [
+        {
+            "id": "package",
+            "type": "promptString",
+            "description": "Package name",
+            "default": "pai_bringup"
+        },
+        {
+            "id": "program",
+            "type": "promptString",
+            "description": "Program name"
+        }
+    ]
+}

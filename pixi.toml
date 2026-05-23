@@ -8,45 +8,107 @@ version = "0.1.0"
 [environments]
 dev = ["dev"]
 ci = ["ci"]
+# ml: standard PyTorch (most NVIDIA GPUs and CPU-only)
+# ml-blackwell: cu130 wheels for RTX 5090 (Blackwell, sm_120)
+ml = ["ml", "cuda-standard"]
+ml-blackwell = ["ml", "cuda-blackwell"]
 
 [feature.dev.tasks]
-build = { cmd = ["colcon", "build", "--symlink-install", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug"] }
+build = { cmd = ["colcon", "build", "--mixin", "debug", "--symlink-install"], inputs = ["src"] }
 
 [feature.ci.activation.env]
 CMAKE_INSTALL_MODE = "COPY"
 
 [tasks]
 
-# Lint
-lint = { cmd = "pre-commit run --all-files" }
+# ---- Workspace setup (composed from hidden helpers below) ----
 
-# Longer uv download timeout (PyTorch wheels are huge).
-install-ml-deps = { cmd = "bash scripts/install_ml_deps.sh", env = { UV_HTTP_TIMEOUT = "600" } }
+[tasks._vcs-import]
+description = "Import external source repos into src/ from repos/external.repos"
+default-environment = "default"
+cmd = ["vcs", "import", "src", "--input", "repos/external.repos", "--recursive"]
 
-# Build
-build = { cmd = ["colcon", "build", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release"]}
-clean = { cmd = "rm -rf build install log" }
+[tasks._register-mixins]
+description = "Register and update the colcon-mixin-repository default index"
+default-environment = "default"
+# `mixin add` errors if the name already exists; `|| true` makes re-runs
+# idempotent. `update default` always follows to pull the latest mixin set.
+cmd = "colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml 2>/dev/null || true && colcon mixin update default"
 
-# Run Demos
-start_zenoh = { cmd = [
-  "ros2",
-  "run",
-  "rmw_zenoh_cpp",
-  "rmw_zenohd",
-]}
-so-arm-leader = { cmd = ["ros2", "launch", "pai_leader_teleop", "leader_bringup.launch.py"] }
-so-arm-real = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_real_bringup.launch.py"] }
-so-arm-gz = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_gz_bringup.launch.py"] }
-so-arm-mujoco = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_mujoco_bringup.launch.py"] }
-rosetta-record-mujoco = { cmd = [
+[tasks.setup]
+description = "One-shot workspace setup: vcs import + register colcon mixins"
+default-environment = "default"
+cmd = "echo 'Setup complete.'"
+depends-on = ["_vcs-import", "_register-mixins"]
+
+# ---- Lint ----
+
+[tasks.lint]
+description = "Run all pre-commit hooks across the workspace"
+default-environment = "default"
+cmd = "pre-commit run --all-files"
+
+# ---- Build / test / clean ----
+
+[tasks.build]
+description = "Release colcon build"
+default-environment = "default"
+cmd = ["colcon", "build", "--mixin", "release"]
+inputs = ["src"]
+
+[tasks.test]
+description = "Run colcon test and report results (fails the task if any test fails)"
+default-environment = "default"
+cmd = "colcon test && colcon test-result --verbose"
+
+[tasks.clean]
+description = "Remove colcon build/install/log directories"
+default-environment = "default"
+cmd = "rm -rf build install log"
+
+# ---- Run demos ----
+
+[tasks.start_zenoh]
+description = "Start the Zenoh RMW router (run in its own terminal, leave running)"
+default-environment = "default"
+cmd = ["ros2", "run", "rmw_zenoh_cpp", "rmw_zenohd"]
+
+[tasks.so-arm-leader]
+description = "Launch the leader-arm teleoperation node"
+default-environment = "default"
+cmd = ["ros2", "launch", "pai_leader_teleop", "leader_bringup.launch.py"]
+
+[tasks.so-arm-real]
+description = "Launch SO-ARM on real hardware"
+default-environment = "default"
+cmd = ["ros2", "launch", "pai_bringup", "so_arm_real_bringup.launch.py"]
+
+[tasks.so-arm-gz]
+description = "Launch SO-ARM in Gazebo"
+default-environment = "default"
+cmd = ["ros2", "launch", "pai_bringup", "so_arm_gz_bringup.launch.py"]
+
+[tasks.so-arm-mujoco]
+description = "Launch SO-ARM in MuJoCo"
+default-environment = "default"
+cmd = ["ros2", "launch", "pai_bringup", "so_arm_mujoco_bringup.launch.py"]
+
+[tasks.rosetta-record-mujoco]
+description = "Record episodes via Rosetta against the MuJoCo sim (requires the ml env for lerobot)"
+default-environment = "ml"
+cmd = [
   "ros2",
   "launch",
   "rosetta",
   "episode_recorder_launch.py",
   "contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml",
   "bag_base_dir:=datasets/so_arm101_mujoco/bags",
-] }
-test-joints = { cmd = [
+]
+
+[tasks.test-joints]
+description = "Publish a test trajectory to /forward_position_controller/commands"
+default-environment = "default"
+cmd = [
   "ros2",
   "topic",
   "pub",
@@ -55,7 +117,17 @@ test-joints = { cmd = [
   "{layout: {dim: [{label: joint, size: 6, stride: 1}]}, data: [0.2,-0.4,0,0,0,0.4]}",
   "--rate",
   "10",
-]}
+]
+
+[tasks.install-ml]
+description = "Auto-detect GPU and install the matching ML environment (ml or ml-blackwell)"
+default-environment = "default"
+cmd = "python3 scripts/install_ml.py"
+
+[tasks.verify-gpu]
+description = "Print PyTorch + CUDA versions and detected GPU (requires the ml or ml-blackwell env)"
+default-environment = "ml"
+cmd = "python -c \"import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}'); print(f'GPU: {torch.cuda.get_device_name(0)}' if torch.cuda.is_available() else 'No GPU detected')\""
 
 [dependencies]
 # Lint/Format
@@ -70,6 +142,8 @@ pkg-config = "*"
 vcstool = "*"
 rosdep = "*"
 ffmpeg = "*"
+# Pin <4.13 for lerobot 0.4.4 opencv-python-headless constraint
+opencv = "<4.13"
 # Required by feetech_ros2_driver
 cpp-expected = ">=1.1.0,<2"
 range-v3 = ">=0.12.0,<0.13"
@@ -145,14 +219,33 @@ ros-kilted-usb-cam = "*"
 ros-kilted-camera-calibration = ">=6.0.11,<7"
 
 [pypi-dependencies]
+# From source because conda-forge 0.1.2 is too old for sdformat15.
+# TODO(francocipollone): switch to upstream once merged: https://github.com/gazebosim/gz-mujoco/pull/125
+sdformat-mjcf = { git = "https://github.com/francocipollone/gz-mujoco.git", branch = "francocipollone/avoid_eulerseq_compiler", subdirectory = "sdformat_mjcf" }
+
+# ---- ML feature (torch comes from cuda-standard or cuda-blackwell) ----
+[feature.ml.pypi-dependencies]
 huggingface-hub = "*"
 # LeRobot 0.4.x imports scipy.fftpack.idct; SciPy 2.0 removed fftpack re-exports.
 scipy = ">=1.11.0,<2"
 lerobot = { version = "==0.4.4", extras = ["feetech", "async"] }
-# SDF→MJCF converter: used at launch time to convert the canonical SDF world to MuJoCo format.
-# Installed from source (conda-forge 0.1.2 is too old for sdformat15).
-# TODO(francocipollone): Point to upstream once the PR is merged: https://github.com/gazebosim/gz-mujoco/pull/125
-sdformat-mjcf = { git = "https://github.com/francocipollone/gz-mujoco.git", branch = "francocipollone/avoid_eulerseq_compiler", subdirectory = "sdformat_mjcf" }
+
+# ---- CUDA variants ----
+[feature.cuda-standard.pypi-dependencies]
+torch = "*"
+torchvision = "*"
+torchaudio = "*"
+
+[feature.cuda-blackwell]
+# x86_64-only: no cu130 or torchcodec aarch64 wheels
+platforms = ["linux-64"]
+
+[feature.cuda-blackwell.pypi-dependencies]
+# sm_120 needs cu130 wheels; requires open kernel module + CUDA 13.0 driver (580.126.20+)
+torch = { version = "==2.9.1", index = "https://download.pytorch.org/whl/cu130" }
+torchvision = { version = "==0.24.1", index = "https://download.pytorch.org/whl/cu130" }
+torchaudio = { version = "==2.9.1", index = "https://download.pytorch.org/whl/cu130" }
+torchcodec = "==0.4.0"
 
 [activation]
 scripts = ["scripts/activate.sh"]
@@ -173,3 +266,5 @@ ROS_DISTRO = "kilted"
 RMW_IMPLEMENTATION = "rmw_zenoh_cpp"
 # uv/PyPI: large wheels (e.g. torch) need a longer per-request timeout than the default 30s
 UV_HTTP_TIMEOUT = "600"
+# Without this, colcon ignores the workspace-local .colcon/defaults.yaml
+COLCON_DEFAULTS_FILE = "${PIXI_PROJECT_ROOT}/.colcon/defaults.yaml"

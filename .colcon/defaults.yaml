@@ -1,0 +1,25 @@
+# colcon/defaults.yaml - Workspace-wide colcon defaults
+# These are applied automatically to all colcon commands run in this workspace
+# See: https://colcon.readthedocs.io/en/released/user/configuration.html
+#
+# Mixins are registered by `pixi run setup` (default index from
+# https://github.com/colcon/colcon-mixin-repository). Per-build switches like
+# release vs debug live on the pixi tasks (--mixin release / --mixin debug);
+# anything we want always-on goes here.
+
+build:
+  merge-install: true
+  mixin:
+    # Use Ninja for ~2x faster incremental builds (ninja is a pixi dependency)
+    - ninja
+    # Generate compile_commands.json for clangd / VS Code C++ intellisense
+    - compile-commands
+  event-handlers:
+    - console_cohesion+
+  base-paths:
+    - src
+
+test:
+  merge-install: true
+  event-handlers:
+    - console_cohesion+

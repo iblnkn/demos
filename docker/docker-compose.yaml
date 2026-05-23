@@ -1,6 +1,10 @@
 services:
   pai-demo:
     image: pai_demo:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: runtime
     depends_on:
       zenoh-router:
         condition: service_started
@@ -15,10 +19,15 @@ services:
       # xhost +si:localuser:root
     network_mode: host
     restart: "no"
-    command: /bin/bash -lc "source install/setup.bash && ros2 launch pai_bringup so_arm_gz_bringup.launch.py"
+    # CMD is passed to the ENTRYPOINT which activates the pixi env first
+    command: ["ros2", "launch", "pai_bringup", "so_arm_gz_bringup.launch.py"]
 
   zenoh-router:
     image: pai_demo:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: runtime
     network_mode: host
     restart: "no"
-    command: ros2 run rmw_zenoh_cpp rmw_zenohd
+    command: ["ros2", "run", "rmw_zenoh_cpp", "rmw_zenohd"]

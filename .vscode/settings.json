@@ -1,0 +1,30 @@
+{
+    "editor.rulers": [100],
+    "editor.tabSize": 4,
+    "files.associations": {
+        "*.repos": "yaml",
+        "*.world": "xml",
+        "*.xacro": "xml",
+        "*.sdf": "xml"
+    },
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "search.exclude": {
+        "**/build": true,
+        "**/install": true,
+        "**/log": true,
+        "**/.pixi": true
+    },
+    "python.defaultInterpreterPath": "${workspaceFolder}/.pixi/envs/default/bin/python",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/.pixi/envs/default/lib/python3.12/site-packages",
+        "${workspaceFolder}/install/lib/python3.12/site-packages"
+    ],
+    "ros.distro": "kilted",
+    "ros.rosSetupScript": "${workspaceFolder}/.pixi/envs/default/setup.bash",
+    "ROS2.usePixiOnAllPlatforms": true,
+    "ROS2.pixiRoot": "${workspaceFolder}",
+    "cmake.configureOnOpen": false,
+    "ros.isolateEnvironment": false,
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+}

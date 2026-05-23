@@ -9,7 +9,7 @@ Install Pixi first by following [its official documentation](https://pixi.prefix
 The following must be installed system-wide.
 See [README.md](../README.md) for installation instructions:
 
-_Dependent repos_: Installed via `vcs import external < pai.repos --recursive`
+_Dependent repos_: Installed via `pixi run setup` (which runs `vcs import` and registers the colcon-mixin default index)
 
 _libserial-dev_: Required for feetech_ros2_driver. Install via:
 
@@ -25,20 +25,27 @@ ROS 2 Kilted dependencies are automatically installed via Pixi when you run `pix
 
 ### 1. Setup Development Environment
 
-Install base environment and ML dependencies:
+Install the base environment and import external repos:
 
 ```bash
-# Step 1: Install base environment (includes ROS 2 Kilted dependencies)
-pixi install
-
-# Step 2: Install ML dependencies (automatically detects GPU and installs appropriate PyTorch)
-pixi run install-ml-deps
+# Installs the default pixi environment and runs vcs import + colcon mixin setup
+pixi run setup
 ```
 
-The `install-ml-deps` task automatically:
+If you need PyTorch + LeRobot (for `rosetta-record-mujoco`, policy training, or
+inference), install the ML environment:
 
-- Detects your GPU (RTX 5090 or standard)
-- Installs the appropriate PyTorch version
+```bash
+# Auto-detects your GPU and installs the right PyTorch wheels
+pixi run install-ml
+```
+
+This detects your GPU via `nvidia-smi` and installs either:
+- **`ml`** — standard PyTorch (most NVIDIA GPUs and CPU-only)
+- **`ml-blackwell`** — cu130 PyTorch wheels for RTX 5090 (Blackwell, sm_120)
+
+Use `pixi run verify-gpu` to confirm PyTorch sees your GPU. ML-requiring tasks
+like `rosetta-record-mujoco` default to the `ml` env automatically.
 
 ### 2. Build
 
@@ -94,10 +101,6 @@ Note: When running ROS 2 commands manually in the shell, ensure the Zenoh router
 Start it in a separate terminal using `pixi run start_zenoh`.
 
 Additional resources for using Pixi can be found at this [blog](https://jafarabdi.github.io/blog/2025/ros2-pixi-dev/).
-
-### Scene Configuration
-
-MuJoCo loads poses from `pai_bringup/config/world/poses.yaml` at launch time. Edit `poses.yaml` to change table, tray, or cube positions, then rebuild and relaunch (or relaunch only with symlink-install). See [config/world/README.md](../pai_bringup/config/world/README.md) for details.
 
 ## FAQ
 

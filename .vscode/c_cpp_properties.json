@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "ROS 2 (Pixi)",
+            "includePath": [
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/install/include/**",
+                "${workspaceFolder}/.pixi/envs/default/include/**"
+            ],
+            "defines": [],
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}

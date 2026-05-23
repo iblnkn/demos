@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script to move SO-ARM100 through various positions
+# Script to move SO-ARM101 through various positions
 # Each position is held for 4 seconds before moving to the next
 
 SLEEP_TIME=4 # seconds to hold each position

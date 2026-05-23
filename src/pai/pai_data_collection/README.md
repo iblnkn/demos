@@ -6,10 +6,10 @@ Data collection tools for Physical AI demos using [rosetta](https://github.com/i
 
 This project uses [Pixi](https://pixi.sh/) for environment management. Make sure the workspace is set up following the [Development Guide](../docs/DEVELOPMENT.md).
 
-The required external repos (`rosetta` and `rosetta_interfaces`) are included in `pai.repos` and will be fetched automatically during workspace setup:
+The required external repos (`rosetta` and `rosetta_interfaces`) are included in `repos/external.repos` and will be fetched automatically during workspace setup:
 
 ```bash
-vcs import external < pai.repos --recursive
+vcs import src < repos/external.repos --recursive
 ```
 
 > [!NOTE]
