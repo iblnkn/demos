@@ -24,10 +24,5 @@ ignore = [
   "RUF012",
   "RUF022"
 ]
-select = ["E", "W", "F", "I", "B", "D", "RET", "RUF", "PL", "PIE", "FLY"]
+select = ["E", "W", "F", "B", "D", "RET", "RUF", "PL", "PIE", "FLY"]
 unfixable = []
-
-[lint.isort]
-force-sort-within-sections = true
-force-single-line = false
-order-by-type = false
