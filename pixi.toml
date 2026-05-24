@@ -61,7 +61,7 @@ inputs = ["src"]
 
 [tasks.test]
 description = "Run colcon test and report results (fails the task if any test fails)"
-default-environment = "default"
+default-environment = "ml"
 cmd = "colcon test && colcon test-result --verbose"
 
 [tasks.clean]
