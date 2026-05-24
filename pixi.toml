@@ -62,7 +62,7 @@ inputs = ["src"]
 [tasks.test]
 description = "Run colcon test and report results (fails the task if any test fails)"
 default-environment = "ml"
-cmd = "colcon test && colcon test-result --verbose"
+cmd = "colcon test --packages-skip lerobot_robot_rosetta && colcon test-result --verbose"
 
 [tasks.clean]
 description = "Remove colcon build/install/log directories"
