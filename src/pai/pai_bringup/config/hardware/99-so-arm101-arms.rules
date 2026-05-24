@@ -1,0 +1,12 @@
+# Udev rules for SO-ARM101 servo bus adapters.
+#
+# Creates stable symlinks matched by unique serial number,
+# so arms can be plugged into any USB port:
+#   /dev/arm_left_follower → left follower arm
+#   /dev/arm_left_leader   → left leader arm
+#
+# To find a new arm's serial:
+#   udevadm info --name=/dev/ttyACM0 --query=all | grep ID_SERIAL_SHORT
+
+SUBSYSTEM=="tty", ENV{ID_SERIAL_SHORT}=="5AE6053377", SYMLINK+="arm_left_follower", MODE="0660", GROUP="dialout"
+SUBSYSTEM=="tty", ENV{ID_SERIAL_SHORT}=="5AE6082226", SYMLINK+="arm_left_leader",   MODE="0660", GROUP="dialout"

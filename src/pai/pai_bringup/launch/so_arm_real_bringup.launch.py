@@ -120,7 +120,7 @@ def generate_launch_description():
     declared_arguments = [
         DeclareLaunchArgument(
             'usb_port',
-            default_value='/dev/ttyACM0',
+            default_value='/dev/arm_left_follower',
             description='USB port for the Feetech servo bus.',
         ),
         DeclareLaunchArgument(

@@ -1,0 +1,13 @@
+# Udev rules for PAI camera symlinks.
+#
+# Creates stable device names regardless of USB enumeration order:
+#   /dev/cam_wrist   → wrist camera (mounted on gripper)
+#   /dev/cam_static  → static camera (rear right of arm)
+#   /dev/cam_top     → top/overhead scene camera
+#
+# Matched by ID_PATH (physical USB port). Each camera must stay
+# plugged into the same physical port across reboots.
+
+SUBSYSTEM=="video4linux", ATTR{index}=="0", ENV{ID_PATH}=="pci-0000:67:00.3-usb-0:1.3.2:1.0", SYMLINK+="cam_wrist",  MODE="0660", GROUP="video"
+SUBSYSTEM=="video4linux", ATTR{index}=="0", ENV{ID_PATH}=="pci-0000:67:00.3-usb-0:1.2.3:1.0", SYMLINK+="cam_static", MODE="0660", GROUP="video"
+SUBSYSTEM=="video4linux", ATTR{index}=="0", ENV{ID_PATH}=="pci-0000:67:00.0-usb-0:2.2:1.0",   SYMLINK+="cam_top",    MODE="0660", GROUP="video"

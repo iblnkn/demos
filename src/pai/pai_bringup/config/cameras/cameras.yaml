@@ -16,3 +16,7 @@ cameras:
   - name: cam_static
     param_path: usb_cam_static.yaml
     namespace: static_camera
+
+  - name: cam_top
+    param_path: usb_cam_top.yaml
+    namespace: top_camera

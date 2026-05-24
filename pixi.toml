@@ -108,6 +108,45 @@ cmd = [
   "bag_base_dir:=datasets/so_arm101_mujoco/bags",
 ]
 
+[tasks.collect]
+description = "Launch full data collection: follower + cameras + leader teleop + recorder"
+default-environment = "ml"
+cmd = [
+  "ros2",
+  "launch",
+  "pai_bringup",
+  "data_collection.launch.py",
+]
+
+[tasks.rosetta-convert]
+description = "Convert recorded bags to LeRobot dataset. Usage: pixi run rosetta-convert <dataset_name>"
+default-environment = "ml"
+cmd = '''
+python -m rosetta.port_bags \
+    --raw-dir datasets/so_arm101/bags \
+    --contract install/share/pai_data_collection/config/rosetta/so_arm101.yaml \
+    --repo-id "$@" \
+    --root datasets_lerobot
+'''
+
+[tasks.train]
+description = "Train a policy. Usage: pixi run train <dataset_name> [-- extra lerobot-train args]"
+default-environment = "ml"
+cmd = '''
+DATASET="${1:?Usage: pixi run train <dataset_name>}"
+shift
+lerobot-train \
+    --dataset.repo_id="$DATASET" \
+    --dataset.root="datasets_lerobot/$DATASET" \
+    --policy.type=act \
+    --output_dir="outputs/train/act_$DATASET" \
+    --job_name="act_$DATASET" \
+    --policy.device=cuda \
+    --policy.push_to_hub=false \
+    --wandb.enable=false \
+    "$@"
+'''
+
 [tasks.test-joints]
 description = "Publish a test trajectory to /forward_position_controller/commands"
 default-environment = "default"

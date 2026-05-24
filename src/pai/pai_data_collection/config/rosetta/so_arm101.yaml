@@ -18,7 +18,14 @@ observations:
     topic: /static_camera/image_raw
     type: sensor_msgs/msg/Image
     image:
-      # Resize for neural network input
+      resize: [480, 480]
+    align: { strategy: hold, stamp: header, tol_ms: 100 }
+    qos: { reliability: best_effort, history: keep_last, depth: 10 }
+
+  - key: observation.images.top
+    topic: /top_camera/image_raw
+    type: sensor_msgs/msg/Image
+    image:
       resize: [480, 480]
     align: { strategy: hold, stamp: header, tol_ms: 100 }
     qos: { reliability: best_effort, history: keep_last, depth: 10 }

@@ -30,6 +30,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Float64MultiArray
 
+
 # Expected joint ordering matching the follower's forward_position_controller config.
 JOINT_ORDER = [
     'shoulder_pan_joint',

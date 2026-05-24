@@ -6,23 +6,37 @@ target-version = "py312"
 quote-style = "single"
 
 [lint]
-# Matches _, __, and _var but not _var_
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 fixable = ["ALL"]
 ignore = [
+  # Match ament convention
   "D100",
+  "D104",
   "D203",
   "D212",
-  "D400",
-  "D401",
-  "D415",
-  "PLR0912",
-  "PLR0913",
-  "PLR0915",
-  "RET504",
-  "RUF005",
-  "RUF012",
-  "RUF022"
 ]
-select = ["E", "W", "F", "B", "D", "RET", "RUF", "PL", "PIE", "FLY"]
+select = [
+  "E",
+  "W",
+  "F",
+  "B",
+  "D",
+  "I",
+  "C4",
+  "A",
+  "RET",
+  "RUF",
+  "PL",
+  "PIE",
+  "FLY",
+]
 unfixable = []
+
+[lint.pydocstyle]
+# No convention — explicit ignores above match the ament convention
+# (ignore D212, enforce D213) without conflicting with ruff-format.
+
+[lint.isort]
+force-single-line = false
+force-sort-within-sections = true
+lines-after-imports = 2

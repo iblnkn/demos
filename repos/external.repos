@@ -5,20 +5,20 @@ repositories:
     version: 12fbcb8cf30da7c3d679db384c43765ea311eb18
   so_arm/feetech_ros2_driver:
     type: git
-    url: https://github.com/legalaspro/feetech_ros2_driver.git
-    version: feat/joint-config-and-calibration
+    url: https://github.com/iblnkn/feetech_ros2_driver.git
+    version: no-response-bug
   mujoco/mujoco_vendor:
     type: git
     url: https://github.com/pal-robotics/mujoco_vendor.git
     version: 26187d69dd239adc45c121af780d57590d189686
   mujoco/mujoco_ros2_control:
     type: git
-    url: https://github.com/ros-controls/mujoco_ros2_control.git
-    version: cd4340cc3878142def1f88845518f2b29647c7c2
+    url: https://github.com/iblnkn/mujoco_ros2_control.git
+    version: test-queue
   rosetta/rosetta:
     type: git
     url: https://github.com/iblnkn/rosetta.git
-    version: 8d251c57b3b0a4cb6b40d64a9f07b567f9eaf623
+    version: main
   rosetta/rosetta_interfaces:
     type: git
     url: https://github.com/iblnkn/rosetta_interfaces.git
