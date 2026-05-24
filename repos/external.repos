@@ -7,6 +7,10 @@ repositories:
     type: git
     url: https://github.com/legalaspro/feetech_ros2_driver.git
     version: feat/joint-config-and-calibration
+  mujoco/mujoco_vendor:
+    type: git
+    url: https://github.com/pal-robotics/mujoco_vendor.git
+    version: 26187d69dd239adc45c121af780d57590d189686
   mujoco/mujoco_ros2_control:
     type: git
     url: https://github.com/ros-controls/mujoco_ros2_control.git
