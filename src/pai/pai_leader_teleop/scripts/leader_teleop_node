@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Teleop relay node: forwards leader joint states to the follower position controller.
+"""
+Teleop relay node: forwards leader joint states to the follower position controller.
 
 Subscribes to the leader's joint_states topic and publishes position
 commands to the follower's forward_position_controller/commands topic.
@@ -31,12 +32,12 @@ from std_msgs.msg import Float64MultiArray
 
 # Expected joint ordering matching the follower's forward_position_controller config.
 JOINT_ORDER = [
-    "shoulder_pan_joint",
-    "shoulder_lift_joint",
-    "elbow_flex_joint",
-    "wrist_flex_joint",
-    "wrist_roll_joint",
-    "gripper_joint",
+    'shoulder_pan_joint',
+    'shoulder_lift_joint',
+    'elbow_flex_joint',
+    'wrist_flex_joint',
+    'wrist_roll_joint',
+    'gripper_joint',
 ]
 
 
@@ -45,18 +46,24 @@ class LeaderTeleopNode(Node):
 
     def __init__(self):
         """Initialize the teleop relay node."""
-        super().__init__("leader_teleop_node")
+        super().__init__('leader_teleop_node')
 
-        self.declare_parameter("leader_joint_states_topic", "/leader/joint_states")
-        self.declare_parameter("follower_commands_topic", "/forward_position_controller/commands")
+        self.declare_parameter('leader_joint_states_topic', '/leader/joint_states')
+        self.declare_parameter('follower_commands_topic', '/forward_position_controller/commands')
 
-        leader_topic = self.get_parameter("leader_joint_states_topic").get_parameter_value().string_value
-        follower_topic = self.get_parameter("follower_commands_topic").get_parameter_value().string_value
+        leader_topic = (
+            self.get_parameter('leader_joint_states_topic').get_parameter_value().string_value
+        )
+        follower_topic = (
+            self.get_parameter('follower_commands_topic').get_parameter_value().string_value
+        )
 
         self.publisher_ = self.create_publisher(Float64MultiArray, follower_topic, 10)
-        self.subscription_ = self.create_subscription(JointState, leader_topic, self._joint_states_cb, 10)
+        self.subscription_ = self.create_subscription(
+            JointState, leader_topic, self._joint_states_cb, 10
+        )
 
-        self.get_logger().info(f"Teleop relay: {leader_topic} -> {follower_topic}")
+        self.get_logger().info(f'Teleop relay: {leader_topic} -> {follower_topic}')
 
     def _joint_states_cb(self, msg: JointState):
         """Map incoming JointState positions to a Float64MultiArray in the expected order."""
@@ -90,5 +97,5 @@ def main(args=None):
         rclpy.shutdown()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

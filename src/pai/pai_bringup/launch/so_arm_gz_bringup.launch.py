@@ -34,37 +34,37 @@ from ros_gz_sim.actions import GzServer
 
 def launch_setup(context, *args, **kwargs):
     """Set up nodes for the SO ARM Gazebo bringup."""
-    controllers_file = LaunchConfiguration("controllers_file").perform(context)
-    prefix = LaunchConfiguration("prefix").perform(context)
-    activate_joint_controller = LaunchConfiguration("activate_joint_controller").perform(context)
-    initial_joint_controller = LaunchConfiguration("initial_joint_controller").perform(context)
-    description_file = LaunchConfiguration("description_file").perform(context)
-    launch_rviz = LaunchConfiguration("launch_rviz").perform(context)
-    rviz_config_file = LaunchConfiguration("rviz_config_file").perform(context)
-    gazebo_gui = LaunchConfiguration("gazebo_gui").perform(context)
-    world_file = LaunchConfiguration("world_file")
-    x = LaunchConfiguration("x").perform(context)
-    y = LaunchConfiguration("y").perform(context)
-    z = LaunchConfiguration("z").perform(context)
-    roll = LaunchConfiguration("roll").perform(context)
-    pitch = LaunchConfiguration("pitch").perform(context)
-    yaw = LaunchConfiguration("yaw").perform(context)
-    cam_static_xyz = LaunchConfiguration("cam_static_xyz").perform(context)
-    cam_static_rpy = LaunchConfiguration("cam_static_rpy").perform(context)
+    controllers_file = LaunchConfiguration('controllers_file').perform(context)
+    prefix = LaunchConfiguration('prefix').perform(context)
+    activate_joint_controller = LaunchConfiguration('activate_joint_controller').perform(context)
+    initial_joint_controller = LaunchConfiguration('initial_joint_controller').perform(context)
+    description_file = LaunchConfiguration('description_file').perform(context)
+    launch_rviz = LaunchConfiguration('launch_rviz').perform(context)
+    rviz_config_file = LaunchConfiguration('rviz_config_file').perform(context)
+    gazebo_gui = LaunchConfiguration('gazebo_gui').perform(context)
+    world_file = LaunchConfiguration('world_file')
+    x = LaunchConfiguration('x').perform(context)
+    y = LaunchConfiguration('y').perform(context)
+    z = LaunchConfiguration('z').perform(context)
+    roll = LaunchConfiguration('roll').perform(context)
+    pitch = LaunchConfiguration('pitch').perform(context)
+    yaw = LaunchConfiguration('yaw').perform(context)
+    cam_static_xyz = LaunchConfiguration('cam_static_xyz').perform(context)
+    cam_static_rpy = LaunchConfiguration('cam_static_rpy').perform(context)
 
     # Process controllers file for xacro
     controllers_file_replaced = ReplaceString(
         source_file=controllers_file,
-        replacements={"<robot_namespace>": ""},
+        replacements={'<robot_namespace>': ''},
     )
     controllers_file_str = controllers_file_replaced.perform(context)
 
     # Build xacro args
     description_xacro_args = (
-        f"simulation_controllers:={controllers_file_str}"
-        f" prefix:={prefix}"
-        f" x:={x} y:={y} z:={z}"
-        f" roll:={roll} pitch:={pitch} yaw:={yaw}"
+        f'simulation_controllers:={controllers_file_str}'
+        f' prefix:={prefix}'
+        f' x:={x} y:={y} z:={z}'
+        f' roll:={roll} pitch:={pitch} yaw:={yaw}'
         f" cam_static_xyz:='{cam_static_xyz}'"
         f" cam_static_rpy:='{cam_static_rpy}'"
     )
@@ -72,10 +72,10 @@ def launch_setup(context, *args, **kwargs):
     # Build robot_description_content for gz_spawn_entity
     robot_description_content = Command(
         [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
+            PathJoinSubstitution([FindExecutable(name='xacro')]),
+            ' ',
             description_file,
-            " ",
+            ' ',
             description_xacro_args,
         ]
     )
@@ -85,58 +85,58 @@ def launch_setup(context, *args, **kwargs):
         PythonLaunchDescriptionSource(
             PathJoinSubstitution(
                 [
-                    FindPackageShare("pai_bringup"),
-                    "launch",
-                    "include",
-                    "so_arm_common.launch.py",
+                    FindPackageShare('pai_bringup'),
+                    'launch',
+                    'include',
+                    'so_arm_common.launch.py',
                 ]
             )
         ),
         launch_arguments={
-            "description_file": description_file,
-            "description_xacro_args": description_xacro_args,
-            "use_sim_time": "true",
-            "initial_joint_controller": initial_joint_controller,
-            "activate_joint_controller": activate_joint_controller,
-            "launch_rviz": launch_rviz,
-            "rviz_config_file": rviz_config_file,
+            'description_file': description_file,
+            'description_xacro_args': description_xacro_args,
+            'use_sim_time': 'true',
+            'initial_joint_controller': initial_joint_controller,
+            'activate_joint_controller': activate_joint_controller,
+            'launch_rviz': launch_rviz,
+            'rviz_config_file': rviz_config_file,
         }.items(),
     )
 
     # GZ-specific nodes
     gz_spawn_entity = Node(
-        package="ros_gz_sim",
-        executable="create",
-        output="screen",
+        package='ros_gz_sim',
+        executable='create',
+        output='screen',
         arguments=[
-            "-string",
+            '-string',
             robot_description_content,
-            "-name",
-            "so_arm",
-            "-allow_renaming",
-            "true",
+            '-name',
+            'so_arm',
+            '-allow_renaming',
+            'true',
         ],
     )
 
     gzserver = GzServer(
         world_sdf_file=world_file,
-        container_name="ros_gz_container",
-        create_own_container="True",
-        use_composition="True",
+        container_name='ros_gz_container',
+        create_own_container='True',
+        use_composition='True',
     )
 
     # Make the /clock topic available in ROS
     gz_sim_bridge = Node(
-        package="ros_gz_bridge",
-        executable="parameter_bridge",
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
         arguments=[
-            "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
-            "/wrist_camera/image_raw@sensor_msgs/msg/Image[gz.msgs.Image",
-            "/wrist_camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo",
-            "/static_camera/image_raw@sensor_msgs/msg/Image[gz.msgs.Image",
-            "/static_camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo",
+            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
+            '/wrist_camera/image_raw@sensor_msgs/msg/Image[gz.msgs.Image',
+            '/wrist_camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo',
+            '/static_camera/image_raw@sensor_msgs/msg/Image[gz.msgs.Image',
+            '/static_camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo',
         ],
-        output="screen",
+        output='screen',
     )
 
     nodes_to_start = [
@@ -146,10 +146,10 @@ def launch_setup(context, *args, **kwargs):
         gz_sim_bridge,
     ]
 
-    if gazebo_gui.lower() == "true":
+    if gazebo_gui.lower() == 'true':
         gzgui = ExecuteProcess(
-            cmd=["gz", "sim", "-g"],
-            output="screen",
+            cmd=['gz', 'sim', '-g'],
+            output='screen',
         )
         nodes_to_start.append(gzgui)
 
@@ -160,82 +160,91 @@ def generate_launch_description():
     """Generate launch description with declared arguments."""
     declared_arguments = [
         DeclareLaunchArgument(
-            "controllers_file",
+            'controllers_file',
             default_value=PathJoinSubstitution(
                 [
-                    FindPackageShare("pai_bringup"),
-                    "config",
-                    "control",
-                    "ros2_controllers.yaml",
+                    FindPackageShare('pai_bringup'),
+                    'config',
+                    'control',
+                    'ros2_controllers.yaml',
                 ]
             ),
-            description="Absolute path to YAML file with the controllers configuration.",
+            description='Absolute path to YAML file with the controllers configuration.',
         ),
         DeclareLaunchArgument(
-            "prefix",
+            'prefix',
             default_value='""',
-            description="Prefix of the joint names, useful for "
-            "multi-robot setup. If changed than also joint names in the controllers' configuration "
-            "have to be updated.",
+            description='Prefix of the joint names, useful for '
+            'multi-robot setup. If changed than also joint names in '
+            "the controllers' configuration have to be updated.",
         ),
         DeclareLaunchArgument(
-            "activate_joint_controller",
-            default_value="true",
-            description="Enable headless mode for robot control",
+            'activate_joint_controller',
+            default_value='true',
+            description='Enable headless mode for robot control',
         ),
         DeclareLaunchArgument(
-            "initial_joint_controller",
-            default_value="forward_position_controller",
-            description="Robot controller to start. "
+            'initial_joint_controller',
+            default_value='forward_position_controller',
+            description='Robot controller to start. '
             "Use 'forward_position_controller' (default) for single-topic control of all 6 joints "
             "(including gripper) for inference/rosetta, or 'joint_trajectory_controller' for "
-            "MoveIt-style control (gripper_controller is automatically spawned alongside it).",
+            'MoveIt-style control (gripper_controller is automatically spawned alongside it).',
         ),
         DeclareLaunchArgument(
-            "description_file",
-            default_value=PathJoinSubstitution([FindPackageShare("pai_bringup"), "urdf", "so_arm_gz.urdf.xacro"]),
-            description="URDF/XACRO description file (absolute path) with the robot.",
+            'description_file',
+            default_value=PathJoinSubstitution(
+                [FindPackageShare('pai_bringup'), 'urdf', 'so_arm_gz.urdf.xacro']
+            ),
+            description='URDF/XACRO description file (absolute path) with the robot.',
         ),
-        DeclareLaunchArgument("launch_rviz", default_value="true", description="Launch RViz?"),
+        DeclareLaunchArgument('launch_rviz', default_value='true', description='Launch RViz?'),
         DeclareLaunchArgument(
-            "rviz_config_file",
-            default_value=PathJoinSubstitution([FindPackageShare("pai_bringup"), "config", "rviz", "so_arm_101.rviz"]),
-            description="Rviz config file (absolute path) to use when launching rviz.",
+            'rviz_config_file',
+            default_value=PathJoinSubstitution(
+                [FindPackageShare('pai_bringup'), 'config', 'rviz', 'so_arm_101.rviz']
+            ),
+            description='Rviz config file (absolute path) to use when launching rviz.',
         ),
-        DeclareLaunchArgument("gazebo_gui", default_value="true", description="Start gazebo with GUI?"),
         DeclareLaunchArgument(
-            "world_file",
-            default_value=PathJoinSubstitution([FindPackageShare("pai_description"), "world", "so_arm_table.sdf"]),
-            description="SDF world file (absolute path) to load in Gazebo.",
+            'gazebo_gui', default_value='true', description='Start gazebo with GUI?'
+        ),
+        DeclareLaunchArgument(
+            'world_file',
+            default_value=PathJoinSubstitution(
+                [FindPackageShare('pai_description'), 'world', 'so_arm_table.sdf']
+            ),
+            description='SDF world file (absolute path) to load in Gazebo.',
         ),
         # Robot spawn pose defaults (arm base position on the table).
-        DeclareLaunchArgument("x", default_value="0.38", description="Robot spawn X position"),
-        DeclareLaunchArgument("y", default_value="0.0", description="Robot spawn Y position"),
-        DeclareLaunchArgument("z", default_value="0.4", description="Robot spawn Z position"),
+        DeclareLaunchArgument('x', default_value='0.38', description='Robot spawn X position'),
+        DeclareLaunchArgument('y', default_value='0.0', description='Robot spawn Y position'),
+        DeclareLaunchArgument('z', default_value='0.4', description='Robot spawn Z position'),
         DeclareLaunchArgument(
-            "roll",
-            default_value="0.0",
-            description="Robot spawn roll orientation (radians)",
+            'roll',
+            default_value='0.0',
+            description='Robot spawn roll orientation (radians)',
         ),
         DeclareLaunchArgument(
-            "pitch",
-            default_value="0.0",
-            description="Robot spawn pitch orientation (radians)",
+            'pitch',
+            default_value='0.0',
+            description='Robot spawn pitch orientation (radians)',
         ),
         DeclareLaunchArgument(
-            "yaw",
-            default_value="3.14159",
-            description="Robot spawn yaw orientation (radians)",
+            'yaw',
+            default_value='3.14159',
+            description='Robot spawn yaw orientation (radians)',
         ),
         DeclareLaunchArgument(
-            "cam_static_xyz",
-            default_value="0.0 0.0 0.50",
-            description="Position of the static (overhead) camera relative to the world frame as 'x y z' in metres.",
+            'cam_static_xyz',
+            default_value='0.0 0.0 0.50',
+            description='Position of the static (overhead) camera '
+            "relative to the world frame as 'x y z' in metres.",
         ),
         DeclareLaunchArgument(
-            "cam_static_rpy",
-            default_value="3.6652 0.0 -1.5708",
-            description="Orientation of the static (overhead) camera relative to the world frame "
+            'cam_static_rpy',
+            default_value='3.6652 0.0 -1.5708',
+            description='Orientation of the static (overhead) camera relative to the world frame '
             "as 'roll pitch yaw' in radians.",
         ),
     ]

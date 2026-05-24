@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Bringup launch file for the SO-ARM101 leader arm with teleop relay.
+"""
+Bringup launch file for the SO-ARM101 leader arm with teleop relay.
 
 Launches the leader arm hardware stack under the /leader namespace and
 a teleop relay node that forwards leader joint states to the follower's
@@ -45,43 +46,45 @@ from nav2_common.launch import RewrittenYaml
 
 def launch_setup(context, *args, **kwargs):
     """Set up nodes for the leader arm bringup with teleop relay."""
-    usb_port = LaunchConfiguration("usb_port").perform(context)
-    prefix = LaunchConfiguration("prefix").perform(context)
-    namespace = LaunchConfiguration("namespace").perform(context)
-    use_sim_time = LaunchConfiguration("use_sim_time").perform(context).lower() == "true"
-    follower_commands_topic = LaunchConfiguration("follower_commands_topic").perform(context)
-    joint_config_file = LaunchConfiguration("joint_config_file").perform(context)
+    usb_port = LaunchConfiguration('usb_port').perform(context)
+    prefix = LaunchConfiguration('prefix').perform(context)
+    namespace = LaunchConfiguration('namespace').perform(context)
+    use_sim_time = LaunchConfiguration('use_sim_time').perform(context).lower() == 'true'
+    follower_commands_topic = LaunchConfiguration('follower_commands_topic').perform(context)
+    joint_config_file = LaunchConfiguration('joint_config_file').perform(context)
 
-    description_file = LaunchConfiguration("description_file").perform(context)
-    ros2_control_file = LaunchConfiguration("ros2_control_file").perform(context)
-    controllers_file = LaunchConfiguration("controllers_file")
-    launch_rviz = LaunchConfiguration("launch_rviz")
-    rviz_config_file = LaunchConfiguration("rviz_config_file").perform(context)
+    description_file = LaunchConfiguration('description_file').perform(context)
+    ros2_control_file = LaunchConfiguration('ros2_control_file').perform(context)
+    controllers_file = LaunchConfiguration('controllers_file')
+    launch_rviz = LaunchConfiguration('launch_rviz')
+    rviz_config_file = LaunchConfiguration('rviz_config_file').perform(context)
 
     # Build robot description via xacro
     robot_description_content = Command(
         [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
+            PathJoinSubstitution([FindExecutable(name='xacro')]),
+            ' ',
             description_file,
-            " ",
-            f"ros2_control_file:={ros2_control_file}",
-            " ",
-            "ros2_control_hardware_type:=real",
-            " ",
-            f"prefix:={prefix}",
-            " ",
-            f"usb_port:={usb_port}",
-            " ",
-            f"joint_config_file:={joint_config_file}",
+            ' ',
+            f'ros2_control_file:={ros2_control_file}',
+            ' ',
+            'ros2_control_hardware_type:=real',
+            ' ',
+            f'prefix:={prefix}',
+            ' ',
+            f'usb_port:={usb_port}',
+            ' ',
+            f'joint_config_file:={joint_config_file}',
         ]
     )
-    robot_description = {"robot_description": ParameterValue(robot_description_content, value_type=str)}
+    robot_description = {
+        'robot_description': ParameterValue(robot_description_content, value_type=str)
+    }
 
     controller_parameters = ParameterFile(
         RewrittenYaml(
             source_file=controllers_file,
-            root_key="",
+            root_key='',
             param_rewrites={},
             convert_types=True,
         ),
@@ -90,33 +93,33 @@ def launch_setup(context, *args, **kwargs):
 
     # ros2_control_node — reads the URDF from the namespaced robot_description topic
     ros2_control_node = Node(
-        package="controller_manager",
-        executable="ros2_control_node",
-        parameters=[controller_parameters, {"use_sim_time": use_sim_time}],
-        remappings=[("~/robot_description", "robot_description")],
-        output="both",
+        package='controller_manager',
+        executable='ros2_control_node',
+        parameters=[controller_parameters, {'use_sim_time': use_sim_time}],
+        remappings=[('~/robot_description', 'robot_description')],
+        output='both',
     )
 
     robot_state_publisher_node = Node(
-        package="robot_state_publisher",
-        executable="robot_state_publisher",
-        output="both",
-        parameters=[robot_description, {"use_sim_time": use_sim_time}],
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        output='both',
+        parameters=[robot_description, {'use_sim_time': use_sim_time}],
         remappings=[
-            ("/tf", f"/{namespace}/tf"),
-            ("/tf_static", f"/{namespace}/tf_static"),
+            ('/tf', f'/{namespace}/tf'),
+            ('/tf_static', f'/{namespace}/tf_static'),
         ],
     )
 
     joint_state_broadcaster_spawner = Node(
-        package="controller_manager",
-        executable="spawner",
+        package='controller_manager',
+        executable='spawner',
         arguments=[
-            "joint_state_broadcaster",
-            "--controller-manager",
-            f"/{namespace}/controller_manager",
+            'joint_state_broadcaster',
+            '--controller-manager',
+            f'/{namespace}/controller_manager',
         ],
-        output="both",
+        output='both',
     )
 
     # Wrap hardware nodes under the leader namespace
@@ -133,29 +136,29 @@ def launch_setup(context, *args, **kwargs):
     # subscribe to /leader/joint_states and publish to the follower's
     # command topic without extra remapping.
     teleop_node = Node(
-        package="pai_leader_teleop",
-        executable="leader_teleop_node",
-        name="leader_teleop_node",
+        package='pai_leader_teleop',
+        executable='leader_teleop_node',
+        name='leader_teleop_node',
         parameters=[
             {
-                "leader_joint_states_topic": f"/{namespace}/joint_states",
-                "follower_commands_topic": follower_commands_topic,
+                'leader_joint_states_topic': f'/{namespace}/joint_states',
+                'follower_commands_topic': follower_commands_topic,
             }
         ],
-        output="both",
+        output='both',
     )
 
     # RViz — optional, uses namespaced TF topics
     rviz_node = Node(
-        package="rviz2",
-        executable="rviz2",
-        name="rviz2_leader",
-        output="log",
-        arguments=["-d", rviz_config_file],
-        parameters=[{"use_sim_time": use_sim_time}],
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2_leader',
+        output='log',
+        arguments=['-d', rviz_config_file],
+        parameters=[{'use_sim_time': use_sim_time}],
         remappings=[
-            ("/tf", f"/{namespace}/tf"),
-            ("/tf_static", f"/{namespace}/tf_static"),
+            ('/tf', f'/{namespace}/tf'),
+            ('/tf_static', f'/{namespace}/tf_static'),
         ],
         condition=IfCondition(launch_rviz),
     )
@@ -167,90 +170,90 @@ def generate_launch_description():
     """Generate launch description with declared arguments."""
     declared_arguments = [
         DeclareLaunchArgument(
-            "usb_port",
-            default_value="/dev/ttyACM1",
-            description="USB port for the leader arm Feetech servo bus.",
+            'usb_port',
+            default_value='/dev/ttyACM1',
+            description='USB port for the leader arm Feetech servo bus.',
         ),
         DeclareLaunchArgument(
-            "prefix",
+            'prefix',
             default_value='""',
-            description="Prefix of the joint names.",
+            description='Prefix of the joint names.',
         ),
         DeclareLaunchArgument(
-            "namespace",
-            default_value="leader",
-            description="ROS namespace for the leader arm nodes.",
+            'namespace',
+            default_value='leader',
+            description='ROS namespace for the leader arm nodes.',
         ),
         DeclareLaunchArgument(
-            "use_sim_time",
-            default_value="false",
-            description="Use simulation time (set to true when the follower is simulated).",
+            'use_sim_time',
+            default_value='false',
+            description='Use simulation time (set to true when the follower is simulated).',
         ),
         DeclareLaunchArgument(
-            "joint_config_file",
-            default_value="",
-            description="Path to YAML file with per-robot joint calibration "
-            "(homing offsets, PID gains, etc.). "
-            "Each robot requires its own calibration file. "
-            "See config/hardware/leader.yaml for an example. "
-            "If not set, only URDF settings are used.",
+            'joint_config_file',
+            default_value='',
+            description='Path to YAML file with per-robot joint calibration '
+            '(homing offsets, PID gains, etc.). '
+            'Each robot requires its own calibration file. '
+            'See config/hardware/leader.yaml for an example. '
+            'If not set, only URDF settings are used.',
         ),
         DeclareLaunchArgument(
-            "description_file",
+            'description_file',
             default_value=PathJoinSubstitution(
                 [
-                    FindPackageShare("pai_leader_teleop"),
-                    "urdf",
-                    "so_arm_leader.urdf.xacro",
+                    FindPackageShare('pai_leader_teleop'),
+                    'urdf',
+                    'so_arm_leader.urdf.xacro',
                 ]
             ),
-            description="URDF/XACRO description file with the robot.",
+            description='URDF/XACRO description file with the robot.',
         ),
         DeclareLaunchArgument(
-            "ros2_control_file",
+            'ros2_control_file',
             default_value=PathJoinSubstitution(
                 [
-                    FindPackageShare("pai_leader_teleop"),
-                    "config",
-                    "control",
-                    "so_arm101_leader.ros2_control.xacro",
+                    FindPackageShare('pai_leader_teleop'),
+                    'config',
+                    'control',
+                    'so_arm101_leader.ros2_control.xacro',
                 ]
             ),
-            description="Path to the leader ros2_control xacro (state-only interfaces).",
+            description='Path to the leader ros2_control xacro (state-only interfaces).',
         ),
         DeclareLaunchArgument(
-            "controllers_file",
+            'controllers_file',
             default_value=PathJoinSubstitution(
                 [
-                    FindPackageShare("pai_leader_teleop"),
-                    "config",
-                    "control",
-                    "ros2_controllers_leader.yaml",
+                    FindPackageShare('pai_leader_teleop'),
+                    'config',
+                    'control',
+                    'ros2_controllers_leader.yaml',
                 ]
             ),
-            description="Path to the leader controllers YAML.",
+            description='Path to the leader controllers YAML.',
         ),
         DeclareLaunchArgument(
-            "follower_commands_topic",
-            default_value="/forward_position_controller/commands",
+            'follower_commands_topic',
+            default_value='/forward_position_controller/commands',
             description="Topic for the follower's forward position controller commands.",
         ),
         DeclareLaunchArgument(
-            "launch_rviz",
-            default_value="false",
-            description="Launch RViz to visualize the leader arm.",
+            'launch_rviz',
+            default_value='false',
+            description='Launch RViz to visualize the leader arm.',
         ),
         DeclareLaunchArgument(
-            "rviz_config_file",
+            'rviz_config_file',
             default_value=PathJoinSubstitution(
                 [
-                    FindPackageShare("pai_leader_teleop"),
-                    "config",
-                    "rviz",
-                    "so_arm_leader.rviz",
+                    FindPackageShare('pai_leader_teleop'),
+                    'config',
+                    'rviz',
+                    'so_arm_leader.rviz',
                 ]
             ),
-            description="RViz config file for the leader arm.",
+            description='RViz config file for the leader arm.',
         ),
     ]
 

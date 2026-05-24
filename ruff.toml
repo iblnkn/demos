@@ -1,6 +1,9 @@
 indent-width = 4
-line-length = 120
+line-length = 99
 target-version = "py312"
+
+[format]
+quote-style = "single"
 
 [lint]
 # Matches _, __, and _var but not _var_
@@ -9,14 +12,22 @@ fixable = ["ALL"]
 ignore = [
   "D100",
   "D203",
-  "D213",
+  "D212",
   "D400",
   "D401",
   "D415",
   "PLR0912",
   "PLR0913",
   "PLR0915",
-  "RUF012"
+  "RET504",
+  "RUF005",
+  "RUF012",
+  "RUF022"
 ]
 select = ["E", "W", "F", "I", "B", "D", "RET", "RUF", "PL", "PIE", "FLY"]
 unfixable = []
+
+[lint.isort]
+force-sort-within-sections = true
+force-single-line = false
+order-by-type = false
