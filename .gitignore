@@ -32,6 +32,9 @@ datasets_lerobot/*
 .env
 .env.*
 
+# Tool caches
+node_modules/
+
 # OS files
 .DS_Store
 

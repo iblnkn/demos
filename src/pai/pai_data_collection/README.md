@@ -26,7 +26,7 @@ Recording uses rosetta's `episode_recorder_launch.py` directly.
 1. Run zenoh router on a separate terminal:
 
 ```bash
-pixi run start_zenoh # ros2 run rmw_zenoh_cpp rmw_zenohd
+pixi run start-zenoh # ros2 run rmw_zenoh_cpp rmw_zenohd
 ```
 
 2. Start simulation:
@@ -79,7 +79,7 @@ This will save a rosbag that corresponds to that episode.
 ```mermaid
 flowchart LR
     A["1. Start Zenoh Router
-    pixi run start_zenoh"] --> B["2. Start Simulation
+    pixi run start-zenoh"] --> B["2. Start Simulation
     pixi run so-arm-gz"]
     B --> C["3. Start Episode Recorder
     ros2 launch rosetta episode_recorder_launch.py ..."]
@@ -98,7 +98,7 @@ flowchart LR
 
 Use MuJoCo simulation with the same `so_arm101.yaml` contract.
 
-1. Start zenoh router: `pixi run start_zenoh`
+1. Start zenoh router: `pixi run start-zenoh`
 2. Start MuJoCo + camera relay: `pixi run so-arm-mujoco`
 3. Start rosetta recorder: `pixi run rosetta-record-mujoco`
 4. Start episode: `ros2 action send_goal /record_episode rosetta_interfaces/action/RecordEpisode "{prompt: 'move arm'}" --feedback`

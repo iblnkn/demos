@@ -60,7 +60,7 @@ source ~/ws_pai/install/setup.bash
 > This project uses [rmw_zenoh](https://github.com/ros2/rmw_zenoh) as the default ROS 2 middleware.
 > When using Pixi, this is configured automatically. For manual installs, install it via
 > `sudo apt install ros-kilted-rmw-zenoh-cpp` and `export RMW_IMPLEMENTATION=rmw_zenoh_cpp`.
-> Ensure the Zenoh router is running: `ros2 run rmw_zenoh_cpp rmw_zenohd` (or `pixi run start_zenoh`).
+> Ensure the Zenoh router is running: `ros2 run rmw_zenoh_cpp rmw_zenohd` (or `pixi run start-zenoh`).
 
 ## Packages
 
@@ -102,7 +102,7 @@ ros2 launch pai_bringup so_arm_gz_bringup.launch.py
 > leave it running for the duration of your session:
 >
 > ```bash
-> pixi run start_zenoh
+> pixi run start-zenoh
 > ```
 >
 > Then open a second terminal for the commands below.
@@ -127,7 +127,7 @@ ros2 launch pai_bringup so_arm_mujoco_bringup.launch.py
 > leave it running for the duration of your session:
 >
 > ```bash
-> pixi run start_zenoh
+> pixi run start-zenoh
 > ```
 >
 > Then open a second terminal for the commands below.
@@ -167,9 +167,9 @@ The real-robot bringup launches a **wrist camera** and a **static camera** by de
 Each camera has its own driver-parameter file (`usb_cam_wrist.yaml`, `usb_cam_static.yaml`) so you can tune resolution, framerate, or pixel format independently — useful when the two cameras are different models.
 
 > [!NOTE]
-> A default camera-calibration file ([`default_640x480.yaml`](pai_bringup/config/cameras/default_640x480.yaml)) is shipped so that RViz Camera displays work without errors. It is **NOT** required for policy training or inference — the policy consumes raw pixel observations and joint-position actions, so camera intrinsics (focal length, principal point, distortion coefficients) never enter the learning or inference pipeline. We publish `camera_info` with placeholder intrinsics for standard ROS tooling (e.g. RViz, image_proc), not for LeRobot. If you need accurate intrinsics (e.g. for 3D reconstruction), replace the default file with a proper calibration via `ros2 run camera_calibration cameracalibrator` or your tool of preference.
+> A default camera-calibration file ([`default_640x480.yaml`](src/pai/pai_bringup/config/cameras/default_640x480.yaml)) is shipped so that RViz Camera displays work without errors. It is **NOT** required for policy training or inference — the policy consumes raw pixel observations and joint-position actions, so camera intrinsics (focal length, principal point, distortion coefficients) never enter the learning or inference pipeline. We publish `camera_info` with placeholder intrinsics for standard ROS tooling (e.g. RViz, image_proc), not for LeRobot. If you need accurate intrinsics (e.g. for 3D reconstruction), replace the default file with a proper calibration via `ros2 run camera_calibration cameracalibrator` or your tool of preference.
 
-Camera frames are defined in [`pai_bringup/urdf/cameras.xacro`](pai_bringup/urdf/cameras.xacro) and published to TF by `robot_state_publisher`. The wrist camera moves with the gripper; the static camera is fixed relative to `base_link`.
+Camera frames are defined in [`pai_bringup/urdf/cameras.xacro`](src/pai/pai_bringup/urdf/cameras.xacro) and published to TF by `robot_state_publisher`. The wrist camera moves with the gripper; the static camera is fixed relative to `base_link`.
 
 To disable cameras:
 
@@ -193,7 +193,7 @@ ros2 launch pai_bringup so_arm_real_bringup.launch.py \
 
 ##### Udev rules
 
-Stable device symlinks (`/dev/cam_wrist`, `/dev/cam_static`) prevent cameras from swapping after a reboot. See [pai_bringup/config/hardware/99-so-arm101-cameras.rules.example](pai_bringup/config/hardware/99-so-arm101-cameras.rules.example) for setup instructions.
+Stable device symlinks (`/dev/cam_wrist`, `/dev/cam_static`) prevent cameras from swapping after a reboot. See [pai_bringup/config/hardware/99-so-arm101-cameras.rules.example](src/pai/pai_bringup/config/hardware/99-so-arm101-cameras.rules.example) for setup instructions.
 
 ### Leader arm teleoperation
 

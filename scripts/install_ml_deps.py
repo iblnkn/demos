@@ -2,10 +2,10 @@
 """Auto-detect GPU and install the matching pixi ML environment."""
 
 import subprocess
-import sys
 
 
 def detect_gpu():
+    """Return the name of the first NVIDIA GPU, or empty string if none."""
     try:
         output = subprocess.check_output(
             ["nvidia-smi", "--query-gpu=name", "--format=csv,noheader"],
@@ -18,6 +18,7 @@ def detect_gpu():
 
 
 def main():
+    """Detect the GPU and install the matching pixi ML environment."""
     gpu = detect_gpu()
     env = "ml-blackwell" if "5090" in gpu else "ml"
 

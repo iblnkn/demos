@@ -35,11 +35,14 @@ default-environment = "default"
 # idempotent. `update default` always follows to pull the latest mixin set.
 cmd = "colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml 2>/dev/null || true && colcon mixin update default"
 
+[tasks._install-hooks]
+cmd = "pre-commit install"
+
 [tasks.setup]
-description = "One-shot workspace setup: vcs import + register colcon mixins"
+description = "One-shot workspace setup: vcs import, register colcon mixins, install git hooks"
 default-environment = "default"
 cmd = "echo 'Setup complete.'"
-depends-on = ["_vcs-import", "_register-mixins"]
+depends-on = ["_vcs-import", "_register-mixins", "_install-hooks"]
 
 # ---- Lint ----
 
@@ -68,7 +71,7 @@ cmd = "rm -rf build install log"
 
 # ---- Run demos ----
 
-[tasks.start_zenoh]
+[tasks.start-zenoh]
 description = "Start the Zenoh RMW router (run in its own terminal, leave running)"
 default-environment = "default"
 cmd = ["ros2", "run", "rmw_zenoh_cpp", "rmw_zenohd"]
@@ -119,10 +122,10 @@ cmd = [
   "10",
 ]
 
-[tasks.install-ml]
+[tasks.install-ml-deps]
 description = "Auto-detect GPU and install the matching ML environment (ml or ml-blackwell)"
 default-environment = "default"
-cmd = "python3 scripts/install_ml.py"
+cmd = "python3 scripts/install_ml_deps.py"
 
 [tasks.verify-gpu]
 description = "Print PyTorch + CUDA versions and detected GPU (requires the ml or ml-blackwell env)"

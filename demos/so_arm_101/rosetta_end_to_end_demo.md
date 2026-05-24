@@ -55,7 +55,7 @@ All backends publish the **same ROS 2 topics** (`/joint_states`, `/forward_posit
 
 A Rosetta contract is a YAML file that defines the mapping between ROS 2 topics and LeRobot dataset features. It tells Rosetta what to record, how to convert units, and where to publish actions during inference.
 
-The SO-ARM101 contract lives at `pai_data_collection/config/rosetta/so_arm101.yaml`:
+The SO-ARM101 contract lives at `src/pai/pai_data_collection/config/rosetta/so_arm101.yaml`:
 
 | ROS 2 Side                                                    |     | LeRobot Side                |
 | ------------------------------------------------------------- | --- | --------------------------- |
@@ -256,7 +256,7 @@ This section walks through the entire pipeline end-to-end using **Gazebo** and *
 ### Step 1 — Start the Zenoh Router
 
 ```bash
-pixi run start_zenoh
+pixi run start-zenoh
 ```
 
 ### Step 2 — Start Gazebo Simulation
@@ -312,7 +312,7 @@ Repeat (a)–(d) **3 times**.
 ```mermaid
 flowchart LR
     A["1. Start Zenoh
-    pixi run start_zenoh"] --> B["2. Start Gazebo
+    pixi run start-zenoh"] --> B["2. Start Gazebo
     pixi run so-arm-gz"]
     B --> C["3. Start Recorder
     ros2 launch rosetta ..."]

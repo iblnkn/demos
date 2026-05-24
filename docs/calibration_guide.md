@@ -19,7 +19,7 @@ Calibration can live in EEPROM, LeRobot cache JSON, URDF/xacro, or an optional `
 
 Default workflow: complete Step 1 only. You do not need to keep repo copies of JSON or YAML up to date for ROS bringup (launch uses an empty `joint_config_file` unless you set it).
 
-The files under `pai_bringup/config/lerobot/*.json` and `pai_bringup/config/hardware/{follower,leader}.yaml` are examples or seeds (for instance copying JSON into LeRobot’s cache per other docs). They are not automatic runtime inputs for ROS unless you wire them yourself.
+The files under `src/pai/pai_bringup/config/lerobot/*.json` and `src/pai/pai_bringup/config/hardware/{follower,leader}.yaml` are examples or seeds (for instance copying JSON into LeRobot’s cache per other docs). They are not automatic runtime inputs for ROS unless you wire them yourself.
 
 Advanced use (LeRobot and ROS must stay aligned): pick one authoring source for shared motor fields (`homing_offset`, limits, PID, protection). After each recalibration, refresh the other artifacts from that source—for example copy from the new LeRobot cache JSON into your YAML before launching with `joint_config_file`, or recalibrate and update both files from the same calibration output. If JSON and YAML are both in play for the same arm, plan to update them together so they stay consistent with that source.
 
@@ -73,8 +73,8 @@ LeRobot writes a JSON file per arm under:
 
 If you want to make those values explicit in this project, copy the relevant fields into a `joint_config_file`, for example:
 
-- [`../pai_bringup/config/hardware/follower.yaml`](../pai_bringup/config/hardware/follower.yaml)
-- [`../pai_bringup/config/hardware/leader.yaml`](../pai_bringup/config/hardware/leader.yaml)
+- [`../src/pai/pai_bringup/config/hardware/follower.yaml`](../src/pai/pai_bringup/config/hardware/follower.yaml)
+- [`../src/pai/pai_bringup/config/hardware/leader.yaml`](../src/pai/pai_bringup/config/hardware/leader.yaml)
 
 Use a `joint_config_file` only if you want to keep a versioned per-robot configuration in the repo, override existing motor settings, or set additional driver parameters.
 
@@ -97,7 +97,7 @@ Common parameters:
 - `p_coefficient` / `i_coefficient` / `d_coefficient`, `return_delay_time`, `max_torque_limit`, `protection_current`, `overload_torque`: optional tuning and protection settings written to the servo EEPROM
 - `acceleration`: optional motion parameter written by the driver, but not persistently to EEPROM
 
-For the **follower gripper**, this project sets these protection values by default in [`../pai_bringup/config/control/so_arm101.ros2_control.xacro`](../pai_bringup/config/control/so_arm101.ros2_control.xacro) to reduce the risk of overloading or damaging the motor:
+For the **follower gripper**, this project sets these protection values by default in [`../src/pai/pai_bringup/config/control/so_arm101.ros2_control.xacro`](../src/pai/pai_bringup/config/control/so_arm101.ros2_control.xacro) to reduce the risk of overloading or damaging the motor:
 
 - `max_torque_limit: 500`
 - `protection_current: 250`

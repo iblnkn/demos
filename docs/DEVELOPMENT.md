@@ -37,10 +37,11 @@ inference), install the ML environment:
 
 ```bash
 # Auto-detects your GPU and installs the right PyTorch wheels
-pixi run install-ml
+pixi run install-ml-deps
 ```
 
 This detects your GPU via `nvidia-smi` and installs either:
+
 - **`ml`** — standard PyTorch (most NVIDIA GPUs and CPU-only)
 - **`ml-blackwell`** — cu130 PyTorch wheels for RTX 5090 (Blackwell, sm_120)
 
@@ -69,7 +70,7 @@ Before running any ROS 2 commands, start the Zenoh router in a separate terminal
 Terminal 1 (start Zenoh router):
 
 ```bash
-pixi run start_zenoh
+pixi run start-zenoh
 ```
 
 Terminal 2 (launch Gazebo simulation):
@@ -98,7 +99,7 @@ You can run commands (e.g., `colcon build`, Python scripts) directly.
 This is useful for interactive debugging, testing, and running multiple commands.
 
 Note: When running ROS 2 commands manually in the shell, ensure the Zenoh router is running.
-Start it in a separate terminal using `pixi run start_zenoh`.
+Start it in a separate terminal using `pixi run start-zenoh`.
 
 Additional resources for using Pixi can be found at this [blog](https://jafarabdi.github.io/blog/2025/ros2-pixi-dev/).
 
